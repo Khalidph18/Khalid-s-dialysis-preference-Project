@@ -7,19 +7,39 @@ let items = [];
 let currentIndex = 0;
 let userRatings = {};
 
-async function loadData() {
-    let { data, error } = await supabase.from('comparison_items').select('*').order('item_number', { ascending: true });
-    if (!error && data.length > 0) {
-        items = data;
+// جلب الأسئلة من Supabase
+async function fetchItems() {
+    try {
+        let { data, error } = await supabase
+            .from('comparison_items')
+            .select('*')
+            .order('item_number', { ascending: true });
+            
+        if (error) {
+            console.error('Error fetching data:', error);
+            return [];
+        }
+        return data || [];
+    } catch (e) {
+        console.error('Exception:', e);
+        return [];
     }
 }
-loadData();
 
-function startEvaluation() {
+async function startEvaluation() {
+    const startBtn = document.querySelector("#start-screen button");
+    if(startBtn) startBtn.innerText = "جاري تحميل الأسئلة...";
+
     if (items.length === 0) {
-        alert("جاري تحميل البيانات، يرجى الانتظار ثواني بسيطة...");
+        items = await fetchItems();
+    }
+
+    if (items.length === 0) {
+        alert("تعذر تحميل الأسئلة من قاعدة البيانات. يرجى التأكد من ربط المفاتيح بشكل صحيح أو إعادة المحاولة.");
+        if(startBtn) startBtn.innerText = "بدء التقييم";
         return;
     }
+
     document.getElementById('start-screen').classList.add('hidden');
     document.getElementById('quiz-screen').classList.remove('hidden');
     renderQuestion();
@@ -53,7 +73,7 @@ function renderRatingButtons(containerId, type, itemNum) {
     for (let i = 1; i <= 5; i++) {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = `w-full py-1.5 text-xs font-bold rounded border transition ${userRatings[itemNum][type] === i ? (type === 'pd' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-blue-600 text-white border-blue-600') : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`;
+        btn.className = `w-full py-2 text-xs font-bold rounded-lg border transition ${userRatings[itemNum][type] === i ? (type === 'pd' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-blue-600 text-white border-blue-600') : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`;
         btn.innerText = i;
         btn.onclick = () => {
             userRatings[itemNum][type] = i;
@@ -73,7 +93,7 @@ function prevQuestion() {
 function nextQuestion() {
     const itemNum = items[currentIndex].item_number;
     if (userRatings[itemNum].pd === 0 || userRatings[itemNum].hd === 0) {
-        alert("يرجى اختيار تقييم لكلا الخيارين للانتشار للخطوة التالية.");
+        alert("يرجى تحديد تقييم (من 1 إلى 5) لكل من الغسيل البريتوني والدموي قبل الانتقال للتالي.");
         return;
     }
 
@@ -142,7 +162,7 @@ async function showAdminLogin() {
         
         if (data && data.length > 0) {
             data.forEach(p => {
-                html += `<div class="p-3 bg-slate-50 border rounded flex justify-between">
+                html += `<div class="p-3 bg-slate-50 border rounded flex justify-between items-center">
                     <div><strong>${p.patient_name}</strong> - التفضيل: <span class="font-bold text-emerald-700">${p.preferred_modality}</span></div>
                     <div class="text-xs text-slate-400">بريتوني: ${p.pd_total_score} | دموي: ${p.hd_total_score}</div>
                 </div>`;
