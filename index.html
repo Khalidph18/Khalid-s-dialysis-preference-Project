@@ -1,344 +1,76 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تقييم المفاضلة لعلاج الغسيل الكلوي</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
-        body { font-family: 'Tajawal', sans-serif; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تقييم الأفضلية للعلاج الأمثل للمريض</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS Client v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col items-center justify-center p-4">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
-    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden my-6">
-        
-        <!-- Header Banner -->
-        <div class="bg-emerald-800 text-white p-6 text-center relative">
-            <h1 class="text-xl md:text-2xl font-bold mb-2">تذكر دائماً: الحل الأمثل لحالتك هو الزراعة</h1>
-            <p class="text-xs md:text-sm text-emerald-100 opacity-90">إذا لم تكن متاحة، يجب عليك المحافظة على حياتك باختيار طريقة الغسيل المثلى لتتمتع بحياة أفضل.</p>
-        </div>
-
-        <div class="p-6 md:p-8">
-
-            <!-- 1. START SCREEN -->
-            <div id="start-screen" class="text-center space-y-6">
-                <div>
-                    <h2 class="text-2xl font-extrabold text-slate-800 mb-2">تقييم الافضلية للعلاج الأمثل للمريض</h2>
-                    <p class="text-sm text-slate-500">درجات التقييم من 1 إلى 5: (1 غير مرضي، 2 مرضي، 3 جيد، 4 جيد جداً، 5 ممتاز)</p>
-                </div>
-
-                <div class="max-w-md mx-auto">
-                    <input type="text" id="patient-name" placeholder="ادخل اسم المريض (اختياري)" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-center focus:ring-2 focus:ring-emerald-500 focus:outline-none text-slate-700">
-                </div>
-
-                <button onclick="startEvaluation()" id="btn-start" class="w-full max-w-md bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg transition duration-200 text-lg">
-                    بدء التقييم
-                </button>
-
-                <div class="pt-4">
-                    <button onclick="showAdminLogin()" class="text-xs text-slate-400 hover:text-slate-600 underline">لوحة تحكم الطبيب/المشرف</button>
-                </div>
-            </div>
-
-            <!-- 2. QUIZ SCREEN -->
-            <div id="quiz-screen" class="hidden space-y-6">
-                <!-- Progress Header -->
-                <div class="flex justify-between items-center text-xs text-slate-500 font-bold border-b pb-3">
-                    <span id="step-counter">وجه المقارنة 1 من 14</span>
-                    <span id="progress-percent" class="text-emerald-700">0%</span>
-                </div>
-                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                    <div id="progress-bar" class="bg-emerald-600 h-2 transition-all duration-300" style="width: 0%"></div>
-                </div>
-
-                <!-- Title -->
-                <h3 id="aspect-title" class="text-xl font-bold text-slate-800 text-right text-emerald-900 border-r-4 border-emerald-600 pr-3 py-1">
-                    عنوان المقارنة
-                </h3>
-
-                <!-- Comparison Cards Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-right">
-                    <!-- PD Card -->
-                    <div class="bg-emerald-50/60 border border-emerald-200 rounded-xl p-4 flex flex-col justify-between">
-                        <div>
-                            <span class="inline-block px-2.5 py-1 bg-emerald-700 text-white text-xs font-bold rounded-md mb-2">الغسيل البريتوني (PD)</span>
-                            <p id="pd-desc" class="text-sm text-slate-700 min-h-[60px]">شرح البريتوني...</p>
-                        </div>
-                        <div class="mt-4 border-t border-emerald-200 pt-3">
-                            <label class="block text-xs font-bold text-emerald-900 mb-2 text-center">درجة التقييم (1 - 5):</label>
-                            <div id="pd-rating-btns" class="grid grid-cols-5 gap-1.5"></div>
-                        </div>
-                    </div>
-
-                    <!-- HD Card -->
-                    <div class="bg-blue-50/60 border border-blue-200 rounded-xl p-4 flex flex-col justify-between">
-                        <div>
-                            <span class="inline-block px-2.5 py-1 bg-blue-700 text-white text-xs font-bold rounded-md mb-2">الغسيل الدموي (HD)</span>
-                            <p id="hd-desc" class="text-sm text-slate-700 min-h-[60px]">شرح الدموي...</p>
-                        </div>
-                        <div class="mt-4 border-t border-blue-200 pt-3">
-                            <label class="block text-xs font-bold text-blue-900 mb-2 text-center">درجة التقييم (1 - 5):</label>
-                            <div id="hd-rating-btns" class="grid grid-cols-5 gap-1.5"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Navigation -->
-                <div class="flex justify-between items-center pt-4 border-t">
-                    <button id="prev-btn" onclick="prevQuestion()" class="px-5 py-2.5 text-sm font-bold bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg disabled:opacity-40">السابق</button>
-                    <button id="next-btn" onclick="nextQuestion()" class="px-6 py-2.5 text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow">التالي</button>
-                </div>
-            </div>
-
-            <!-- 3. RESULT SCREEN -->
-            <div id="result-screen" class="hidden space-y-6 text-center">
-                <h3 class="text-2xl font-extrabold text-slate-800">نتيجة تقييم المفاضلة</h3>
-                
-                <div id="recommendation-box" class="p-5 rounded-xl text-right"></div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div id="pd-score-card" class="p-4 rounded-xl border-2">
-                        <span class="text-xs font-bold uppercase block mb-1">الغسيل البريتوني</span>
-                        <span id="pd-total" class="text-3xl font-extrabold">0</span>
-                        <span class="text-xs block mt-1">نقطة</span>
-                    </div>
-                    <div id="hd-score-card" class="p-4 rounded-xl border-2">
-                        <span class="text-xs font-bold uppercase block mb-1">الغسيل الدموي</span>
-                        <span id="hd-total" class="text-3xl font-extrabold">0</span>
-                        <span class="text-xs block mt-1">نقطة</span>
-                    </div>
-                </div>
-
-                <button onclick="location.reload()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl transition">إعادة التقييم</button>
-            </div>
-
-            <!-- 4. ADMIN SCREEN -->
-            <div id="admin-screen" class="hidden space-y-4 text-right">
-                <div class="flex justify-between items-center border-b pb-3">
-                    <h3 class="text-lg font-bold">لوحة تحكم الطبيب / المشرف</h3>
-                    <button onclick="location.reload()" class="text-xs bg-slate-200 px-3 py-1 rounded">خروج</button>
-                </div>
-                <div id="admin-content" class="text-sm">جاري تحميل البيانات...</div>
-            </div>
-
-        </div>
+  <div class="max-w-xl w-full bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+    <!-- Header Banner -->
+    <div class="bg-emerald-800 text-white p-6 text-center">
+      <h2 class="text-lg font-bold mb-1">تذكر دائماً: الحل الأمثل لحالتك هو الزراعة</h2>
+      <p class="text-sm opacity-90">إذا لم تكن متاحة، يجب عليك المحافظة على حياتك بانتخاب طريقة الغسيل المثلى لتتمتع بحياة أفضل.</p>
     </div>
 
-    <!-- Application Script -->
-    <script>
-        // === ضع بيانات SUPABASE الخاصة بك هنا ===
-        const SUPABASE_URL = "https://bhzyifhxammbtwudprqg.supabase.co"; 
-        const SUPABASE_KEY = "sb_publishable_RnJsAcc9aE7ZYnGp_QFX1Q_9hctVOJ2";
+    <!-- Main Content Card -->
+    <div class="p-6 text-center">
+      <h1 class="text-2xl font-extrabold text-gray-800 mb-2">تقييم الأفضلية للعلاج الأمثل للمريض</h1>
+      <p class="text-sm text-gray-500 mb-6">درجات التقييم من 1 إلى 5: (1 غير مرضي، 2 مرضي، 3 جيد، 4 جيد جداً، 5 ممتاز)</p>
 
-        // الأسئلة الاحتياطية المضمنة مباشرة لمنع أي توقف في الواجهة
-        const fallbackItems = [
-            { item_number: 1, aspect: "مكان وطريقة إجراء الغسيل", pd_desc: "يجرى بالمنزل بواسطة المريض/المرافق بعد التدريب.", hd_desc: "يجرى بالمركز الصحي بواسطة الكادر الطبي." },
-            { item_number: 2, aspect: "مرونة المواعيد والجدول الأسبوعي", pd_desc: "جدول مرن بالمنزل دون الالتزام بمواعيد المركز.", hd_desc: "مواعيد ثابته بالمركز 3 مرات أسبوعياً." },
-            { item_number: 3, aspect: "التأثير على السفر والحركة", pd_desc: "سهولة السفر والحركة مع نقل السوائل مع المريض.", hd_desc: "يتطلب تنسيق مسبق وحجز مركز غسيل بمدينة السفر." },
-            { item_number: 4, aspect: "النظام الغذائي وقيود السوائل", pd_desc: "قيود أقل حرية أكبر في تناول الطعام والسوائل.", hd_desc: "قيود صارمة على كمية السوائل والبوتاسيوم والفسفور." },
-            { item_number: 5, aspect: "استقرار ضغط الدم والدورة الدموية", pd_desc: "مستمر ولطيف على القلب استقرار أفضل لضغط الدم.", hd_desc: "تغيرات سريعة بالضغط وقد يسبب هبوطاً أو إرهاقاً." },
-            { item_number: 6, aspect: "الحفاظ على وظيفة الكلية المتبقية", pd_desc: "يحافظ على الوظيفة المتبقية للكلية لفترة أطول.", hd_desc: "تتراجع الوظيفة المتبقية بسرعة أكبر عادةً." },
-            { item_number: 7, aspect: "الحاجة الوصلة الوعائية أو القسطرة", pd_desc: "قسطرة بسيطة في البطن (دائمة وتجميلية).", hd_desc: "وصلة شريانية وريدية (AVF) بالذراع أو قسطرة وريدية." },
-            { item_number: 8, aspect: "مستوى الاستقلالية والاعتماد على النفس", pd_desc: "استقلالية عالية للمريض في إدارة علاجه بنفسه.", hd_desc: "اعتماد كامل على الفريق الطبي بالمستشفى." },
-            { item_number: 9, aspect: "المواظبة والالتزام اليومي", pd_desc: "يتطلب التزاماً يومياً أسلوب روتيني منتظم.", hd_desc: "التزام بأيام المواعيد المحددة أسبوعياً فقط." },
-            { item_number: 10, aspect: "مساحة التخزين بالمنزل", pd_desc: "يحتاج مساحة نظيفة بالمنزل لتخزين المحاليل.", hd_desc: "لا يحتاج لمساحة تخزين بالمنزل." },
-            { item_number: 11, aspect: "مستوى الشعور بالإجهاد بعد الجلسة", pd_desc: "إجهاد أقل يمارس المريض حياته الطبيعية فوراً.", hd_desc: "شعر بالإجهاد أو الخمول لعدة ساعات بعد الجلسة." },
-            { item_number: 12, aspect: "مخاطر العدوى وطبيعتها", pd_desc: "خطر التهاب الغشاء البريتوني (يمكن تجنبه بالتعقيم).", hd_desc: "خطر التهاب الوصلة الوعائية أو عدوى مجرى الدم." },
-            { item_number: 13, aspect: "التأثير على العمل والدراسة", pd_desc: "أسهل للمحافظة على الوظيفة أو الدراسة (يمكن إجراؤه ليلاً).", hd_desc: "قد يتعارض مع أوقات العمل/الدراسة لالتزام المواعيد." },
-            { item_number: 14, aspect: "التواصل والبيئة الاجتماعية", pd_desc: "بقاء المريض بين أسرته وبيئته المنزلية.", hd_desc: "تواصل مستمر مع مرضى وكادر المركز الصحي." }
-        ];
+      <!-- Patient Input Form -->
+      <form id="evaluationForm" onsubmit="handleStartEvaluation(event)" class="space-y-4">
+        <div>
+          <input
+            type="text"
+            id="patientName"
+            placeholder="ادخل اسم المريض (اختياري)"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+          />
+        </div>
 
-        let supabase = null;
-        let items = [];
-        let currentIndex = 0;
-        let userRatings = {};
+        <button
+          type="submit"
+          class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 shadow-md"
+        >
+          بدء التقييم
+        </button>
+      </form>
 
-        // تهيئة Supabase بأمان
-        try {
-            if (window.supabase && SUPABASE_KEY && !SUPABASE_KEY.includes("ضَع_المفتاح")) {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            }
-        } catch(e) {
-            console.warn("Supabase initialization skipped:", e);
-        }
+      <!-- Navigation Link -->
+      <div class="mt-6">
+        <a href="#doctor-dashboard" class="text-xs text-gray-400 hover:text-emerald-700 underline">
+          لوحة تحكم الطبيب/المشرف
+        </a>
+      </div>
+    </div>
+  </div>
 
-        async function fetchItems() {
-            if (!supabase) return fallbackItems;
-            try {
-                let { data, error } = await supabase.from('comparison_items').select('*').order('item_number', { ascending: true });
-                if (error || !data || data.length === 0) {
-                    return fallbackItems;
-                }
-                return data;
-            } catch (e) {
-                return fallbackItems;
-            }
-        }
+  <!-- JavaScript App Logic -->
+  <script>
+    // 1. Corrected Supabase Configuration
+    const SUPABASE_URL = "https://bhzyifhxammbtwudprqg.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_RnJsAcc9aE7ZYnGp_QFX1Q_9hctVOJ2";
 
-        async function startEvaluation() {
-            const btn = document.getElementById('btn-start');
-            btn.innerText = "جاري التحميل...";
-            btn.disabled = true;
+    // 2. Initialize Supabase Client once using window scope
+    const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-            items = await fetchItems();
+    // 3. Form Submission Handler
+    function handleStartEvaluation(event) {
+      event.preventDefault();
+      const patientName = document.getElementById('patientName').value.trim();
+      
+      alert(`مرحباً ${patientName || "عزيزي المريض"}! سيتم بدء التقييم الآن.`);
+      
+      // Add your survey / evaluation logic or database save here:
+      // if (supabaseClient) { ... }
+    }
+  </script>
 
-            btn.innerText = "بدء التقييم";
-            btn.disabled = false;
-
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById('quiz-screen').classList.remove('hidden');
-            renderQuestion();
-        }
-
-        function renderQuestion() {
-            const item = items[currentIndex];
-            document.getElementById('step-counter').innerText = `وجه المقارنة ${currentIndex + 1} من ${items.length}`;
-            const progress = Math.round(((currentIndex + 1) / items.length) * 100);
-            document.getElementById('progress-percent').innerText = `${progress}%`;
-            document.getElementById('progress-bar').style.width = `${progress}%`;
-
-            document.getElementById('aspect-title').innerText = `${item.item_number}. ${item.aspect}`;
-            document.getElementById('pd-desc').innerText = item.pd_desc;
-            document.getElementById('hd-desc').innerText = item.hd_desc;
-
-            if (!userRatings[item.item_number]) {
-                userRatings[item.item_number] = { pd: 0, hd: 0 };
-            }
-
-            renderRatingButtons('pd-rating-btns', 'pd', item.item_number);
-            renderRatingButtons('hd-rating-btns', 'hd', item.item_number);
-
-            document.getElementById('prev-btn').disabled = currentIndex === 0;
-            document.getElementById('next-btn').innerText = currentIndex === items.length - 1 ? 'إنهاء وحساب النتيجة' : 'التالي';
-        }
-
-        function renderRatingButtons(containerId, type, itemNum) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-            for (let i = 1; i <= 5; i++) {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                const isSelected = userRatings[itemNum][type] === i;
-                btn.className = `w-full py-2 text-xs font-bold rounded-lg border transition ${isSelected ? (type === 'pd' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-blue-600 text-white border-blue-600') : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`;
-                btn.innerText = i;
-                btn.onclick = () => {
-                    userRatings[itemNum][type] = i;
-                    renderRatingButtons(containerId, type, itemNum);
-                };
-                container.appendChild(btn);
-            }
-        }
-
-        function prevQuestion() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                renderQuestion();
-            }
-        }
-
-        function nextQuestion() {
-            const itemNum = items[currentIndex].item_number;
-            if (userRatings[itemNum].pd === 0 || userRatings[itemNum].hd === 0) {
-                alert("يرجى تحديد تقييم (من 1 إلى 5) لكل من الغسيل البريتوني والدموي قبل الانتقال للتالي.");
-                return;
-            }
-
-            if (currentIndex < items.length - 1) {
-                currentIndex++;
-                renderQuestion();
-            } else {
-                calculateAndShowResult();
-            }
-        }
-
-        async function calculateAndShowResult() {
-            let pdTotal = 0;
-            let hdTotal = 0;
-
-            items.forEach(item => {
-                const r = userRatings[item.item_number];
-                pdTotal += r.pd;
-                hdTotal += r.hd;
-            });
-
-            document.getElementById('quiz-screen').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-
-            document.getElementById('pd-total').innerText = pdTotal;
-            document.getElementById('hd-total').innerText = hdTotal;
-
-            const pdCard = document.getElementById('pd-score-card');
-            const hdCard = document.getElementById('hd-score-card');
-            const recBox = document.getElementById('recommendation-box');
-
-            let preferred = pdTotal >= hdTotal ? 'الغسيل البريتوني' : 'الغسيل الدموي';
-
-            if (pdTotal >= hdTotal) {
-                pdCard.className = "p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-800";
-                hdCard.className = "p-4 rounded-xl border-2 border-slate-200 bg-white text-slate-400";
-                recBox.className = "p-5 rounded-xl mb-6 text-right bg-emerald-100/60 border border-emerald-300 text-emerald-900";
-                recBox.innerHTML = `<h4 class="font-bold text-lg mb-1">الخيار الموصى به بناءً على تقييمك: الغسيل البريتوني</h4><p class="text-sm">حصل الغسيل البريتوني على مجموع نقاط أعلى (${pdTotal} نقطة)، وهو الخيار الأنسب لنمط حياتك وتفضيلاتك شخصياً.</p>`;
-            } else {
-                hdCard.className = "p-4 rounded-xl border-2 border-blue-500 bg-blue-50 text-blue-800";
-                pdCard.className = "p-4 rounded-xl border-2 border-slate-200 bg-white text-slate-400";
-                recBox.className = "p-5 rounded-xl mb-6 text-right bg-blue-100/60 border border-blue-300 text-blue-900";
-                recBox.innerHTML = `<h4 class="font-bold text-lg mb-1">الخيار الموصى به بناءً على تقييمك: الغسيل الدموي</h4><p class="text-sm">حصل الغسيل الدموي على مجموع نقاط أعلى (${hdTotal} نقطة)، وهو الخيار الأنسب لتفضيلاتك شخصياً.</p>`;
-            }
-
-            if (supabase) {
-                const patientName = document.getElementById('patient-name').value || 'مريض غير مسجل';
-                try {
-                    await supabase.from('patient_evaluations').insert([
-                        {
-                            patient_name: patientName,
-                            pd_total_score: pdTotal,
-                            hd_total_score: hdTotal,
-                            preferred_modality: preferred,
-                            ratings_json: userRatings
-                        }
-                    ]);
-                } catch(e) { console.error("Save result error:", e); }
-            }
-        }
-
-        async function showAdminLogin() {
-            const pwd = prompt("ادخل كلمة مرور المشرف:");
-            if (pwd === "admin123") {
-                document.getElementById('start-screen').classList.add('hidden');
-                document.getElementById('admin-screen').classList.remove('hidden');
-                
-                if (supabase) {
-                    try {
-                        let { data } = await supabase.from('patient_evaluations').select('*').order('created_at', { ascending: false });
-                        let html = `<h3 class="font-bold mb-3">إجمالي التقييمات المسجلة (${data ? data.length : 0}):</h3><div class="space-y-2">`;
-                        if (data && data.length > 0) {
-                            data.forEach(p => {
-                                html += `<div class="p-3 bg-slate-50 border rounded flex justify-between items-center">
-                                    <div><strong>${p.patient_name}</strong> - التفضيل: <span class="font-bold text-emerald-700">${p.preferred_modality}</span></div>
-                                    <div class="text-xs text-slate-400">بريتوني: ${p.pd_total_score} | دموي: ${p.hd_total_score}</div>
-                                </div>`;
-                            });
-                        } else {
-                            html += `<p class="text-slate-500">لا توجد تقييمات مسجلة بعد.</p>`;
-                        }
-                        html += `</div>`;
-                        document.getElementById('admin-content').innerHTML = html;
-                    } catch(e) {
-                        document.getElementById('admin-content').innerHTML = `<p class="text-red-500">تعذر جلب البيانات.</p>`;
-                    }
-                } else {
-                    document.getElementById('admin-content').innerHTML = `<p class="text-amber-600">الموقع يعمل بالوضع المحلي (دون اتصال بقاعدة البيانات).</p>`;
-                }
-            } else if (pwd) {
-                alert("كلمة المرور غير صحيحة");
-            }
-        }
-    </script>
 </body>
 </html>
-
